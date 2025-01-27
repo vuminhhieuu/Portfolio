@@ -9,10 +9,10 @@ const ContactForm = () => {
     e.preventDefault();
 
     emailjs.sendForm(
-      'service_iaj3l9i',  // Thay bằng Service ID của bạn
-      'template_hh95pkn', // Thay bằng Template ID của bạn
+      import.meta.env.VITE_SERVICE_ID,  // Thay bằng Service ID của bạn
+      import.meta.env.VITE_TEMPLATE_ID, // Thay bằng Template ID của bạn
       form.current,
-      '1P_JAYOSmQoBrM_b6'      // Thay bằng User ID của bạn
+      import.meta.env.VITE_USER_ID      // Thay bằng User ID của bạn
     )
     .then((result) => {
       console.log(result.text);

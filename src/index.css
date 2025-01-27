@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* Base */
 html {
     scroll-behavior: smooth;
@@ -10,4 +9,29 @@ html {
 
 body {
     @apply bg-zinc-900 text-zinc-50
+}
+
+/* Admin Panel Specific Styles */
+.admin-layout {
+  @apply min-h-screen bg-zinc-900;
+}
+
+.admin-card {
+  @apply bg-zinc-800 rounded-lg shadow-lg p-6;
+}
+
+.admin-input {
+  @apply w-full bg-zinc-700 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.admin-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors disabled:opacity-50;
+}
+
+.admin-button-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors disabled:opacity-50;
+}
+
+.admin-link {
+  @apply text-blue-400 hover:text-blue-300 transition-colors;
 }
