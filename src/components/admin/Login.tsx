@@ -1,58 +1,85 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { LockIcon } from "lucide-react";
+// src/components/admin/Login.tsx
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { loginWithEmailAndPassword } from '../../services/authService';
+
 export function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    username: "",
-    password: ""
-  });
-  const [error, setError] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const location = useLocation();
+  
+  // Get the redirect path from location state or default to /admin
+  const from = location.state?.from?.pathname || '/admin';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add authentication logic here
-    if (credentials.username === "admin" && credentials.password === "password") {
-      navigate("/admin");
-    } else {
-      setError("Invalid credentials");
+    setError('');
+    setLoading(true);
+    
+    try {
+      await loginWithEmailAndPassword(email, password);
+      navigate(from, { replace: true });
+    } catch (err: any) {
+      setError('Failed to sign in: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
-  return <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-              <LockIcon size={24} className="text-blue-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-800">Admin Login</h1>
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+        <h2 className="text-2xl font-bold text-center text-slate-800 mb-6">
+          Portfolio Admin Login
+        </h2>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
           </div>
-          {error && <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6">
-              {error}
-            </div>}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1">
-                Username
-              </label>
-              <input type="text" id="username" value={credentials.username} onChange={e => setCredentials(prev => ({
-              ...prev,
-              username: e.target.value
-            }))} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-                Password
-              </label>
-              <input type="password" id="password" value={credentials.password} onChange={e => setCredentials(prev => ({
-              ...prev,
-              password: e.target.value
-            }))} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required />
-            </div>
-            <button type="submit" className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Login
-            </button>
-          </form>
-        </div>
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
       </div>
-    </div>;
+    </div>
+  );
 }

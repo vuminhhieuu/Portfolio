@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, MessageSquareIcon, ImageIcon, LogOutIcon } from "lucide-react";
+import { logout } from "../../services/authService";
 export function AdminLayout() {
   const navigate = useNavigate();
   const menuItems = [{
@@ -36,9 +37,13 @@ export function AdminLayout() {
     label: "Media",
     path: "/admin/media"
   }];
-  const handleLogout = () => {
-    // Add logout logic here
-    navigate("/admin/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
   };
   return <div className="min-h-screen bg-slate-100">
       {/* Sidebar */}
