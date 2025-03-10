@@ -1,6 +1,5 @@
-import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, MessageSquareIcon, ImageIcon, LogOutIcon } from "lucide-react";
+import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, MessageSquareIcon, ImageIcon, LogOutIcon, HomeIcon } from "lucide-react";
 import { logout } from "../../services/authService";
 export function AdminLayout() {
   const navigate = useNavigate();
@@ -8,7 +7,11 @@ export function AdminLayout() {
     icon: LayoutDashboardIcon,
     label: "Dashboard",
     path: "/admin"
-  }, {
+  },{
+    icon: HomeIcon,
+    label: "Hero",
+    path: "/admin/hero"
+  },{
     icon: UserIcon,
     label: "About Me",
     path: "/admin/about"

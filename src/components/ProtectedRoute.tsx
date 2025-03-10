@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
-import { LoadingAnimation } from './LoadingAnimation';
+import { LoadingAnimation } from './PrePortfolio';
 
 export function ProtectedRoute() {
   const { currentUser, loading } = useAuthContext();

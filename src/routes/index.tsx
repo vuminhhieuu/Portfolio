@@ -1,4 +1,3 @@
-// src/routes/index.tsx
 import { createBrowserRouter } from 'react-router-dom';
 import { Portfolio } from '../pages/Portfolio';
 import { Login } from '../components/admin/Login';
@@ -6,6 +5,7 @@ import { AdminLayout } from '../components/admin/AdminLayout';
 import { Dashboard } from '../components/admin/Dashboard';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { 
+  HeroAdmin,
   AboutAdmin, 
   SkillsAdmin, 
   ProjectsAdmin, 
@@ -32,6 +32,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <Dashboard /> },
+          { path: 'hero', element: <HeroAdmin /> }, 
           { path: 'about', element: <AboutAdmin /> },
           { path: 'skills', element: <SkillsAdmin /> },
           { path: 'projects', element: <ProjectsAdmin /> },
@@ -44,7 +45,6 @@ export const router = createBrowserRouter([
     ]
   },
   {
-    // Catch-all route for 404
     path: '*',
     element: <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
