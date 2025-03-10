@@ -1,27 +1,17 @@
-// src/components/admin/pages/AboutAdmin.tsx
 import React, { useState, useEffect } from 'react';
-import { getAboutData, updateAboutData, uploadProfilePhoto, uploadResume, AboutData } from '../../../services/aboutService';
-import { ImageUploader } from '../shared/ImageUploader';
+import { getAboutData, updateAboutData, defaultAboutData } from '../../../services/aboutService';
+import { CloudinaryUploadWidget } from '../../CloudinaryUploadWidget';
 
 export function AboutAdmin() {
+  const [formData, setFormData] = useState(defaultAboutData);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<AboutData>({
-    name: '',
-    email: '',
-    location: '',
-    availability: '',
-    bio: '',
-    additionalInfo: '',
-    photoUrl: '',
-    resumeUrl: ''
-  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
-  // Load about data
+  // Fetch About data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,24 +31,19 @@ export function AboutAdmin() {
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle profile photo upload
-  const handleProfilePhotoChange = (files: File[]) => {
-    if (files.length > 0) {
-      setProfilePhotoFile(files[0]);
-    }
+  const handleProfilePhotoSuccess = (url: string) => {
+    console.log("Profile photo uploaded:", url);
+    setProfilePhotoUrl(url);
+    setFormData(prev => ({ ...prev, photoUrl: url }));
   };
-
-  // Handle resume upload
-  const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setResumeFile(e.target.files[0]);
-    }
+  
+  const handleResumeSuccess = (url: string) => {
+    console.log("Resume uploaded:", url);
+    setResumeUrl(url);
+    setFormData(prev => ({ ...prev, resumeUrl: url }));
   };
 
   // Handle form submission
@@ -67,30 +52,25 @@ export function AboutAdmin() {
     setError(null);
     setSuccess(null);
     setSaving(true);
-
+  
     try {
-      let updatedData = { ...formData };
+      // Đảm bảo cập nhật formData với giá trị mới nhất
+      const updatedData = {
+        ...formData,
+        photoUrl: profilePhotoUrl || formData.photoUrl,
+        resumeUrl: resumeUrl || formData.resumeUrl
+      };
 
-      // Upload profile photo if selected
-      if (profilePhotoFile) {
-        const photoUrl = await uploadProfilePhoto(profilePhotoFile);
-        updatedData.photoUrl = photoUrl;
-      }
-
-      // Upload resume if selected
-      if (resumeFile) {
-        const resumeUrl = await uploadResume(resumeFile);
-        updatedData.resumeUrl = resumeUrl;
-      }
-
-      // Update about data
+      console.log("Saving data to Firestore:", formData);
+      console.log("Resume URL being saved:", formData.resumeUrl);
+  
       await updateAboutData(updatedData);
-      setFormData(updatedData);
+      setFormData(updatedData); // Cập nhật state formData
       setSuccess('About information updated successfully!');
       
-      // Reset file inputs
-      setProfilePhotoFile(null);
-      setResumeFile(null);
+      // Reset state sau khi lưu thành công
+      setProfilePhotoUrl(null);
+      setResumeUrl(null);
     } catch (err) {
       setError('Failed to update about information');
       console.error(err);
@@ -195,45 +175,32 @@ export function AboutAdmin() {
           </div>
           
           {/* Profile Photo */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">Profile Photo</h2>
-            
-            <div className="flex flex-col items-center">
-              {formData.photoUrl && (
-                <div className="mb-4">
-                  <img 
-                    src={formData.photoUrl} 
-                    alt="Profile" 
-                    className="w-40 h-40 rounded-full object-cover border-4 border-slate-200"
-                  />
-                </div>
-              )}
-            <ImageUploader 
-                value={formData.photoUrl}
-                onChange={(dataUrl) => {
-                    setFormData(prev => ({
-                    ...prev,
-                    photoUrl: dataUrl
-                    }));
-                }}
-                onRemove={() => {
-                    setFormData(prev => ({
-                    ...prev,
-                    photoUrl: ''
-                    }));
-                    setProfilePhotoFile(null);
-                }}
-            />
-
-
-              
-              {profilePhotoFile && (
-                <p className="text-sm text-green-600 mt-2">
-                  New photo selected: {profilePhotoFile.name}
-                </p>
-              )}
-            </div>
-          </div>
+          <div className="w-full">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Upload Profile Photo</label>
+                <CloudinaryUploadWidget 
+                  onSuccess={handleProfilePhotoSuccess}
+                  buttonText="Upload Profile Photo"
+                  resourceType="image"
+                  widgetId="profile" // ID duy nhất cho widget này
+                />
+                {(profilePhotoUrl || formData.photoUrl) && (
+                  <div className="mt-4">
+                    <img 
+                      src={profilePhotoUrl || formData.photoUrl} 
+                      alt="Profile Preview" 
+                      className="w-40 h-40 rounded-full object-cover border-2 border-slate-200"
+                    />
+                  </div>
+                )}
+                {profilePhotoUrl && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                      <p className="text-sm text-green-700 flex items-center">
+                        <span className="mr-2">✓</span>
+                        Profile photo uploaded successfully!
+                      </p>
+                    </div>
+                )}
+              </div>
         </div>
         
         {/* Bio Information */}
@@ -270,42 +237,31 @@ export function AboutAdmin() {
         </div>
         
         {/* Resume Upload */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">Resume</h2>
-          
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Upload Resume (PDF)
-            </label>
-            <input
-              type="file"
-              onChange={handleResumeChange}
-              accept=".pdf"
-              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            
-            {formData.resumeUrl && !resumeFile && (
-              <div className="mt-2">
-                <p className="text-sm text-slate-600">
-                  Current resume: 
-                  <a 
-                    href={formData.resumeUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="ml-2 text-blue-500 hover:underline"
-                  >
-                    View Resume
-                  </a>
-                </p>
-              </div>
-            )}
-            
-            {resumeFile && (
-              <p className="text-sm text-green-600 mt-2">
-                New resume selected: {resumeFile.name}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Upload Resume (PDF)
+          </label>
+          <CloudinaryUploadWidget 
+            onSuccess={handleResumeSuccess}
+            buttonText="Upload Resume"
+            resourceType="raw" // Quan trọng: sử dụng 'raw' cho PDF
+            widgetId="resume"
+          />
+          {(resumeUrl || formData.resumeUrl) && (
+            <div className="mt-2">
+              <p className="text-sm text-slate-600">
+                {resumeUrl ? "New resume selected: " : "Current resume: "}
+                <a 
+                  href={(resumeUrl || formData.resumeUrl || '').replace('fl_attachment/', '')}
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  className="text-blue-500 hover:underline"
+                >
+                  View Resume
+                </a>
               </p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         
         {/* Submit Button */}

@@ -1,33 +1,41 @@
-// src/services/aboutService.ts
-import { db, storage } from './firebase';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { db } from './firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { uploadImage, uploadFile } from './cloudinaryService';
 
-// Define the About data structure
+// Định nghĩa cấu trúc dữ liệu About
 export interface AboutData {
   name: string;
   email: string;
   location: string;
   availability: string;
-  bio: string; // First paragraph
-  additionalInfo: string; // Second paragraph
+  bio: string;
+  additionalInfo: string;
   photoUrl: string;
   resumeUrl?: string;
+  skills?: {
+    name: string;
+    level: number;
+  }[];
 }
 
-// Default data
+// Dữ liệu mặc định
 export const defaultAboutData: AboutData = {
-  name: '',
-  email: '',
-  location: '',
-  availability: '',
-  bio: '',
-  additionalInfo: '',
+  name: 'Vũ Minh Hiếu',
+  email: 'example@example.com',
+  location: 'TP. Hồ Chí Minh, Việt Nam',
+  availability: 'Full-time',
+  bio: 'Tôi là một Web Developer đam mê với công nghệ và thiết kế giao diện người dùng.',
+  additionalInfo: 'Tôi có kinh nghiệm làm việc với React, Node.js, và các công nghệ web hiện đại khác.',
   photoUrl: '',
-  resumeUrl: ''
+  skills: [
+    { name: 'HTML/CSS', level: 90 },
+    { name: 'JavaScript', level: 85 },
+    { name: 'React', level: 80 },
+    { name: 'Node.js', level: 75 }
+  ]
 };
 
-// Get about data
+// Lấy dữ liệu About từ Firestore
 export const getAboutData = async (): Promise<AboutData> => {
   try {
     const docRef = doc(db, 'portfolio', 'about');
@@ -36,16 +44,16 @@ export const getAboutData = async (): Promise<AboutData> => {
     if (docSnap.exists()) {
       return docSnap.data() as AboutData;
     } else {
-      // If no document exists, return default data
+      console.log('No about data found!');
       return defaultAboutData;
     }
   } catch (error) {
     console.error('Error getting about data:', error);
-    throw error;
+    return defaultAboutData;
   }
 };
 
-// Update about data
+// Cập nhật dữ liệu About
 export const updateAboutData = async (data: AboutData): Promise<void> => {
   try {
     const docRef = doc(db, 'portfolio', 'about');
@@ -56,39 +64,22 @@ export const updateAboutData = async (data: AboutData): Promise<void> => {
   }
 };
 
-// Upload profile photo
+// Upload ảnh hồ sơ - Sử dụng Cloudinary
 export const uploadProfilePhoto = async (file: File): Promise<string> => {
   try {
-    const storageRef = ref(storage, `profile/${file.name}`);
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
+    return await uploadImage(file);
   } catch (error) {
     console.error('Error uploading profile photo:', error);
     throw error;
   }
 };
 
-// Upload resume
+// Upload CV/Resume - Sử dụng Cloudinary
 export const uploadResume = async (file: File): Promise<string> => {
   try {
-    const storageRef = ref(storage, `resume/${file.name}`);
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
+    return await uploadFile(file);
   } catch (error) {
     console.error('Error uploading resume:', error);
-    throw error;
-  }
-};
-
-// Delete file from storage
-export const deleteFile = async (fileUrl: string): Promise<void> => {
-  try {
-    const fileRef = ref(storage, fileUrl);
-    await deleteObject(fileRef);
-  } catch (error) {
-    console.error('Error deleting file:', error);
     throw error;
   }
 };
