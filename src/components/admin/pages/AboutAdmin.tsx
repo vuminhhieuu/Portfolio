@@ -61,9 +61,6 @@ export function AboutAdmin() {
         resumeUrl: resumeUrl || formData.resumeUrl
       };
 
-      console.log("Saving data to Firestore:", formData);
-      console.log("Resume URL being saved:", formData.resumeUrl);
-  
       await updateAboutData(updatedData);
       setFormData(updatedData); // Cập nhật state formData
       setSuccess('About information updated successfully!');
