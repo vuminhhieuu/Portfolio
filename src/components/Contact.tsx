@@ -1,10 +1,23 @@
 import React from "react";
 import { MapPinIcon, PhoneIcon, MailIcon, SendIcon } from "lucide-react";
+import emailjs from 'emailjs-com';
+
+const SERVICE_ID = import.meta.env.VITE_SERVICE_ID;
+const TEMPLATE_ID = import.meta.env.VITE_TEMPLATE_ID;
+const USER_ID = import.meta.env.VITE_USER_ID;
+
 export function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Form submission logic would go here
-    alert("Thank you for your message! I will get back to you soon.");
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, e.target as HTMLFormElement, USER_ID)
+      .then((result) => {
+        console.log(result.text);
+        alert('Cảm ơn bạn đã liên hệ! Tin nhắn của bạn đã được gửi thành công.');
+      }, (error) => {
+        console.log(error.text);
+        alert('Xin lỗi, đã có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.');
+      });
   };
   return <section id="contact" className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-8">

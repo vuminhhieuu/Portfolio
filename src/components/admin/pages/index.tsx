@@ -3,6 +3,7 @@ import { AboutAdmin } from './AboutAdmin';
 import { SkillsAdmin } from './SkillsAdmin';
 import { ProjectsAdmin } from './ProjectsAdmin';
 import { CertificatesAdmin } from './CertificatesAdmin';
+import { ExperienceAdmin } from './ExperienceAdmin';
 
 export { 
     HeroAdmin,
@@ -10,11 +11,10 @@ export {
     SkillsAdmin,
     ProjectsAdmin,
     CertificatesAdmin,
-    // ExperienceAdmin,
-    // MessagesAdmin,
+    ExperienceAdmin,
+    
     // MediaAdmin
 };
 
-export const ExperienceAdmin = () => <div className="p-4">Experience Admin Page</div>;
-export const MessagesAdmin = () => <div className="p-4">Messages Admin Page</div>;
+
 export const MediaAdmin = () => <div className="p-4">Media Admin Page</div>;

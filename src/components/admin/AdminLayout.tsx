@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, MessageSquareIcon, ImageIcon, LogOutIcon, HomeIcon } from "lucide-react";
+import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, ImageIcon, LogOutIcon, HomeIcon } from "lucide-react";
 import { logout } from "../../services/authService";
+
 export function AdminLayout() {
   const navigate = useNavigate();
   const menuItems = [{
@@ -31,10 +32,6 @@ export function AdminLayout() {
     icon: BriefcaseIcon,
     label: "Experience",
     path: "/admin/experience"
-  }, {
-    icon: MessageSquareIcon,
-    label: "Messages",
-    path: "/admin/messages"
   }, {
     icon: ImageIcon,
     label: "Media",
