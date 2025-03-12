@@ -11,6 +11,7 @@ import { LoadingAnimation } from "../components/PrePortfolio";
 export function Portfolio() {
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(0);
   
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -27,6 +28,27 @@ export function Portfolio() {
     }
   }, [isLoading]);
   
+  // Lấy chiều cao của header để tạo padding-top cho main
+  useEffect(() => {
+    if (!isLoading && showContent) {
+      const headerElement = document.querySelector('header');
+      if (headerElement) {
+        setHeaderHeight(headerElement.offsetHeight);
+      }
+      
+      // Cập nhật lại khi resize cửa sổ
+      const handleResize = () => {
+        const headerElement = document.querySelector('header');
+        if (headerElement) {
+          setHeaderHeight(headerElement.offsetHeight);
+        }
+      };
+      
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [isLoading, showContent]);
+  
   if (isLoading) {
     return <LoadingAnimation onComplete={handleLoadingComplete} />;
   }
@@ -41,7 +63,7 @@ export function Portfolio() {
       }}
     >
       <Header />
-      <main>
+      <main style={{ paddingTop: headerHeight ? `${headerHeight}px` : '4rem' }}>
         <Hero />
         <About />
         <PortfolioTabs />

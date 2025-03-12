@@ -115,11 +115,6 @@ export function Projects() {
         variants={cardVariants}
       >
         <h2 className="text-3xl font-bold mb-2">My Projects</h2>
-        <div className="w-20 h-1.5 bg-blue-600 mx-auto mb-6"></div>
-        <p className="text-slate-700 max-w-2xl mx-auto">
-          Explore my latest projects and applications that showcase my skills and experience.
-          From web applications to mobile apps, these projects represent my journey as a developer.
-        </p>
       </motion.div>
       
       {/* Filter Buttons */}
