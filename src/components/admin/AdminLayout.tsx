@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, ImageIcon, LogOutIcon, HomeIcon } from "lucide-react";
+import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, ImageIcon, LogOutIcon, HomeIcon, BackpackIcon } from "lucide-react";
 import { logout } from "../../services/authService";
 
 export function AdminLayout() {
@@ -68,7 +68,14 @@ export function AdminLayout() {
                   </li>;
             })}
             </ul>
+            {/* Portfolio back */}
+            <button onClick={() => navigate('/')} className="flex items-center w-full px-4 py-2 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                <BackpackIcon size={20} className="mr-3" />
+                Portfolio
+            </button>
+  
           </nav>
+          
           {/* Logout */}
           <div className="p-4 border-t border-slate-200">
             <button onClick={handleLogout} className="flex items-center w-full px-4 py-2 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-red-600 transition-colors">
