@@ -113,7 +113,7 @@ export function Certificates() {
   return (
     <motion.div
       ref={ref}
-      className="container mx-auto px-4 py-16"
+      className="container mx-auto px-4 md:px-8"
       variants={containerVariants}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
@@ -122,46 +122,7 @@ export function Certificates() {
         className="text-center mb-16"
         variants={cardVariants}
       >
-        <h2 className="text-3xl font-bold mb-2">Certifications</h2>
-        <div className="w-20 h-1.5 bg-blue-600 mx-auto mb-6"></div>
-        <p className="text-slate-700 max-w-2xl mx-auto">
-          Professional certifications and achievements that validate my skills and knowledge.
-        </p>
       </motion.div>
-
-      {/* Categories filter - only show if there are categories */}
-      {categories.length > 0 && (
-        <motion.div
-          className="flex justify-center mb-12"
-          variants={cardVariants}
-        >
-          <div className="inline-flex bg-slate-100 rounded-lg p-1 flex-wrap justify-center">
-            <button
-              onClick={() => setActiveCategory("all")}
-              className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 m-1 ${
-                activeCategory === "all"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-slate-600 hover:text-blue-600"
-              }`}
-            >
-              All
-            </button>
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 m-1 ${
-                  activeCategory === category
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-slate-600 hover:text-blue-600"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
 
       {/* Certificates Grid */}
       {filteredCertificates().length === 0 ? (

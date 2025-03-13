@@ -3,7 +3,6 @@ import {
   PlusIcon, TrashIcon, EditIcon, SaveIcon, 
   ArrowUpIcon, ArrowDownIcon, ClockIcon
 } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 import { 
   getExperiences, saveExperience, deleteExperience, updateExperiencesOrder, 
   createEmptyExperience, Experience 

@@ -149,13 +149,13 @@ export function Hero() {
             >
               Contact Me
             </a>
-            
+              
             <a 
-              href="#projects" 
+              href="#portfolio" 
               className="px-6 py-3 bg-white text-primary-600 border border-primary-600 rounded-lg hover:bg-primary-50 transition-colors flex items-center gap-2"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById("projects")?.scrollIntoView({
+                document.getElementById("portfolio")?.scrollIntoView({
                   behavior: "smooth"
                 });
               }}

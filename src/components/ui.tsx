@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "ghost";
@@ -132,3 +133,56 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = "md", className = "" })
     <div className={`animate-spin rounded-full border-2 border-current border-t-transparent ${sizeClasses[size]} ${className}`} />
   );
 };
+
+interface CategoryFilterProps {
+  categories: string[];
+  activeCategory: string;
+  onChange: (category: string) => void;
+  variant?: "primary" | "secondary";
+}
+
+export function CategoryFilter({ 
+  categories, 
+  activeCategory, 
+  onChange,
+  variant = "primary" 
+}: CategoryFilterProps) {
+  if (!categories || categories.length === 0) return null;
+  
+  const filterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  };
+  
+  return (
+    <motion.div
+      className="w-full flex justify-center mb-10"
+      variants={filterVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="max-w-full overflow-x-auto pb-2">
+        <div className={`inline-flex rounded-xl p-1.5 ${variant === "primary" ? "bg-slate-100" : "bg-white border border-slate-200"} flex-nowrap`}>
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => onChange(category)}
+              className={`
+                px-5 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all duration-300
+                ${activeCategory === category 
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-200" 
+                  : "text-slate-600 hover:text-blue-500"}
+              `}
+            >
+              {typeof category === 'string' ? category.charAt(0).toUpperCase() + category.slice(1) : category}
+            </button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
