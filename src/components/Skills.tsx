@@ -6,6 +6,7 @@ import * as FaIcons from "react-icons/fa";
 import * as SiIcons from "react-icons/si";
 import * as AiIcons from "react-icons/ai";
 import { CheckCircle2Icon } from "lucide-react";
+import { CategoryFilter } from "./ui";
 
 export function Skills() {
   const [categories, setCategories] = useState<SkillCategory[]>([]);
@@ -100,6 +101,11 @@ export function Skills() {
     );
   };
 
+  // Render kĩ năng theo category
+  const getCategoryTitles = () => {
+    return mainCategories.map(cat => cat.title);
+  };
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -151,38 +157,15 @@ export function Skills() {
           className="text-center mb-16"
           variants={itemVariants}
         >
-          <h2 className="text-3xl font-bold mb-2">My Skills</h2>
-          <div className="w-20 h-1.5 bg-blue-600 mx-auto mb-6"></div>
-          <p className="text-slate-700 max-w-2xl mx-auto">
-            I've worked with a variety of technologies and methodologies
-            throughout my career. Here's an overview of my technical expertise
-            and proficiency levels.
-          </p>
         </motion.div>
 
         {mainCategories.length > 0 && (
           <>
-            <motion.div 
-              className="flex justify-center mb-12"
-              variants={itemVariants}
-            >
-              <div className="inline-flex bg-slate-100 rounded-lg p-1 flex-wrap justify-center">
-                {mainCategories.map(category => (
-                  <button 
-                    key={category.id} 
-                    onClick={() => setActiveCategory(category.title)} 
-                    className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 m-1 ${
-                      activeCategory === category.title 
-                        ? "bg-white text-blue-600 shadow-sm" 
-                        : "text-slate-600 hover:text-blue-600"
-                    }`}
-                  >
-                    {category.title}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-
+            <CategoryFilter 
+              categories={getCategoryTitles()}
+              activeCategory={activeCategory}
+              onChange={setActiveCategory}
+            />
             <motion.div 
               className="grid grid-cols-1 gap-8"
               variants={itemVariants}

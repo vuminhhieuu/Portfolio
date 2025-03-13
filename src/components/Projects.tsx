@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { getProjects, Project } from "../services/projectsService";
 import { GithubIcon, ExternalLinkIcon, ArrowRightIcon } from "lucide-react";
+import { CategoryFilter } from "./ui";
 
 export function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -105,7 +106,7 @@ export function Projects() {
   return (
     <motion.div 
       ref={ref}
-      className="container mx-auto px-4 py-16"
+      className="container mx-auto px-4 md:px-8"
       variants={containerVariants}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
@@ -114,32 +115,7 @@ export function Projects() {
         className="text-center mb-16"
         variants={cardVariants}
       >
-        <h2 className="text-3xl font-bold mb-2">My Projects</h2>
       </motion.div>
-      
-      {/* Filter Buttons */}
-      {getFilterOptions().length > 2 && (
-        <motion.div 
-          className="flex justify-center mb-12"
-          variants={cardVariants}
-        >
-          <div className="inline-flex bg-slate-100 rounded-lg p-1 flex-wrap justify-center">
-            {getFilterOptions().map(category => (
-              <button 
-                key={category} 
-                onClick={() => setFilter(category)} 
-                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 m-1 capitalize ${
-                  filter === category 
-                    ? "bg-white text-blue-600 shadow-sm" 
-                    : "text-slate-600 hover:text-blue-600"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
       
       {/* Projects Grid */}
       {visibleProjects.length === 0 ? (

@@ -1,93 +1,254 @@
-import React, { useState } from "react";
-import { BriefcaseIcon, CalendarIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { motion, AnimatePresence } from "framer-motion";
+import { getExperiences, Experience as ExperienceType, formatDate, calculateDuration } from "../services/experienceService";
+import { BriefcaseIcon, CalendarIcon, ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "lucide-react";
+
 export function Experience() {
-  const [expandedId, setExpandedId] = useState<number | null>(1);
-  const experiences = [{
-    id: 1,
-    role: "Senior Full-Stack Engineer",
-    company: "TechNova Solutions",
-    duration: "2021 - Present",
-    description: "Lead developer for the company's flagship SaaS platform. Architected and implemented microservices, optimized database performance, and mentored junior developers. Reduced page load times by 40% and increased test coverage to 90%.",
-    technologies: ["React", "Node.js", "AWS", "MongoDB", "Docker"]
-  }, {
-    id: 2,
-    role: "Full-Stack Developer",
-    company: "DataViz Systems",
-    duration: "2018 - 2021",
-    description: "Developed and maintained data visualization applications for enterprise clients. Implemented real-time dashboards, interactive charts, and data processing pipelines. Collaborated with UX designers to enhance user experience.",
-    technologies: ["React", "TypeScript", "Express", "PostgreSQL", "D3.js"]
-  }, {
-    id: 3,
-    role: "Frontend Developer",
-    company: "WebCraft Studios",
-    duration: "2016 - 2018",
-    description: "Built responsive web applications for clients across various industries. Focused on accessibility, performance optimization, and cross-browser compatibility. Participated in agile development processes and sprint planning.",
-    technologies: ["JavaScript", "HTML/CSS", "React", "Redux", "SCSS"]
-  }, {
-    id: 4,
-    role: "Junior Web Developer",
-    company: "Digital Innovations",
-    duration: "2015 - 2016",
-    description: "Assisted in the development and maintenance of client websites. Created custom WordPress themes and plugins. Collaborated with designers to implement UI components and responsive layouts.",
-    technologies: ["JavaScript", "PHP", "WordPress", "jQuery", "CSS"]
-  }];
-  const toggleExperience = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
+  const [experiences, setExperiences] = useState<ExperienceType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  // Fetch experiences
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        setLoading(true);
+        const data = await getExperiences();
+        setExperiences(data);
+      } catch (err) {
+        console.error("Error fetching experiences:", err);
+        setError("Failed to load experiences");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExperiences();
+  }, []);
+
+  // Toggle expanded state
+  const toggleExpanded = (id: string) => {
+    setExpandedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
   };
-  return <section id="experience" className="py-20 bg-slate-50">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="text-center mb-16">
+
+  // Check if an experience is expanded
+  const isExpanded = (id: string) => expandedIds.has(id);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
+  };
+
+    // Content animation variants
+    const contentVariants = {
+      hidden: { 
+        height: 0,
+        opacity: 0,
+        transition: {
+          height: { duration: 0.3, ease: "easeInOut" },
+          opacity: { duration: 0.2 }
+        }
+      },
+      visible: { 
+        height: "auto", 
+        opacity: 1,
+        transition: {
+          height: { duration: 0.3, ease: "easeInOut" },
+          opacity: { duration: 0.3, delay: 0.1 }
+        }
+      }
+    };
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center text-red-500">
+          <p>Error loading experiences</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (experiences.length === 0) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center text-slate-500">
+          <p>No work experience to display yet.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <section id="experience" className="py-20 bg-slate-50">
+      <motion.div 
+        ref={ref}
+        className="container mx-auto px-4 md:px-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+      >
+        <motion.div className="text-center mb-16" variants={itemVariants}>
           <h2 className="text-3xl font-bold mb-2">Work Experience</h2>
           <div className="w-20 h-1.5 bg-blue-600 mx-auto mb-6"></div>
           <p className="text-slate-700 max-w-2xl mx-auto">
             My professional journey as a developer, showcasing my growth and the
             impactful work I've done.
           </p>
-        </div>
+        </motion.div>
+
         <div className="max-w-4xl mx-auto">
           <div className="relative">
             <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-blue-200"></div>
             <div className="space-y-8">
-              {experiences.map((exp, index) => <div key={exp.id} className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
+              {experiences.map((exp, index) => (
+                <motion.div 
+                  key={exp.id} 
+                  className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
+                  variants={itemVariants}
+                >
                   <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-5 h-5 rounded-full bg-blue-600 border-4 border-blue-100 z-10"></div>
                   <div className="ml-8 md:ml-0 md:w-1/2 md:px-8">
                     <div className="bg-white rounded-lg shadow-md border border-slate-100 overflow-hidden">
-                      <button onClick={() => toggleExperience(exp.id)} className="w-full p-6 text-left hover:bg-slate-50 transition-colors">
+                      <button 
+                        onClick={() => toggleExpanded(exp.id)} 
+                        className="w-full p-6 text-left hover:bg-slate-50 transition-colors"
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 text-blue-600 mb-1">
                               <BriefcaseIcon size={18} />
-                              <h3 className="font-semibold">{exp.role}</h3>
+                              <h3 className="font-semibold">{exp.position}</h3>
                             </div>
-                            <div className="font-medium text-lg">
+                            <div className="font-medium text-lg flex items-center">
                               {exp.company}
+                              {exp.url && (
+                                <a
+                                  href={exp.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="ml-2 text-blue-500 hover:text-blue-700"
+                                  aria-label={`Visit ${exp.company} website`}
+                                >
+                                  <ExternalLinkIcon className="w-4 h-4" />
+                                </a>
+                              )}
                             </div>
                             <div className="flex items-center gap-1 text-slate-500 text-sm">
                               <CalendarIcon size={14} />
-                              <span>{exp.duration}</span>
+                              <span>
+                                {formatDate(exp.startDate)} - {exp.current
+                                  ? "Present"
+                                  : formatDate(exp.endDate || "")}
+                                {/* Duration */}
+                                <span className="ml-2 text-slate-400">
+                                  ({calculateDuration(
+                                    exp.startDate,
+                                    exp.endDate,
+                                    exp.current
+                                  )})
+                                </span>
+                              </span>
                             </div>
                           </div>
-                          {expandedId === exp.id ? <ChevronUpIcon size={20} className="text-slate-400" /> : <ChevronDownIcon size={20} className="text-slate-400" />}
+                          {isExpanded(exp.id) ? 
+                            <ChevronUpIcon size={20} className="text-slate-400" /> : 
+                            <ChevronDownIcon size={20} className="text-slate-400" />
+                          }
                         </div>
                       </button>
-                      <div className={`transition-all duration-300 ease-in-out ${expandedId === exp.id ? "max-h-96" : "max-h-0"} overflow-hidden`}>
-                        <div className="px-6 pb-6">
-                          <p className="text-slate-700 mb-4">
-                            {exp.description}
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {exp.technologies.map(tech => <span key={tech} className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded">
-                                {tech}
-                              </span>)}
+                      <AnimatePresence>
+                        <motion.div
+                          key={`content-${exp.id}`}
+                          initial="hidden"
+                          animate={isExpanded(exp.id) ? "visible" : "hidden"}
+                          exit="hidden"
+                          variants={contentVariants}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6">
+                            <p className="text-slate-700 mb-4">
+                              {exp.description}
+                            </p>
+                          
+                          {/* Responsibilities */}
+                          {exp.responsibilities && exp.responsibilities.length > 0 && (
+                              <div className="mb-4">
+                                <h4 className="font-semibold text-slate-700 mb-2">Key Responsibilities:</h4>
+                                <ul className="list-disc list-inside space-y-1">
+                                  {exp.responsibilities.map((responsibility, idx) => (
+                                    <li key={idx} className="text-slate-600 text-sm">{responsibility}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          
+                          {/* Technologies */}
+                          {exp.technologies && exp.technologies.length > 0 && (
+                              <div className="flex flex-wrap gap-2">
+                                {exp.technologies.map((tech, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </div>
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
                   </div>
-                </div>)}
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-    </section>;
+      </motion.div>
+    </section>
+  );
 }

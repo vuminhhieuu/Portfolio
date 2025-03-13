@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Projects } from "./Projects";
 import { Skills } from "./Skills";
 import { Certificates } from "./Certificates";
+import { motion } from "framer-motion";
+
 export function PortfolioTabs() {
   const [activeTab, setActiveTab] = useState("projects");
   const tabs = [{
     id: "projects",
     label: "Projects"
-  }, {
-    id: "skills",
-    label: "Skills"
-  }, {
+  },{
     id: "certificates",
     label: "Certificates"
-  }];
+  },{
+    id: "skills",
+    label: "Tech stack"
+  }, 
+  ];
   const renderContent = () => {
     switch (activeTab) {
       case "projects":
@@ -37,13 +40,28 @@ export function PortfolioTabs() {
           </p>
         </div>
         {/* Tab Navigation */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex bg-slate-100 rounded-lg p-1">
-            {tabs.map(tab => <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${activeTab === tab.id ? "bg-white text-blue-600 shadow-sm" : "text-slate-600 hover:text-blue-600"}`}>
+        <motion.div 
+          className="w-full flex justify-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="inline-flex bg-slate-100 rounded-xl p-1.5">
+            {tabs.map(tab => (
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id)} 
+                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
+                  activeTab === tab.id 
+                    ? "bg-white text-blue-600 shadow-sm border border-slate-200" 
+                    : "text-slate-600 hover:text-blue-600"
+                }`}
+              >
                 {tab.label}
-              </button>)}
+              </button>
+            ))}
           </div>
-        </div>
+        </motion.div>
         {/* Tab Content */}
         <div className="min-h-[600px]">{renderContent()}</div>
       </div>
