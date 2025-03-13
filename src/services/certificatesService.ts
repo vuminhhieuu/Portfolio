@@ -37,30 +37,8 @@ export const getCertificates = async (): Promise<Certificate[]> => {
 };
 
 // Lưu chứng chỉ
-export const saveCertificate = async (certificate: Certificate, imageFile: File | null = null): Promise<Certificate> => {
+export const saveCertificate = async (certificate: Certificate): Promise<Certificate> => {
   try {
-    // Update timestamp
-    const now = Date.now();
-    
-    // Nếu có file ảnh mới, upload lên storage
-    if (imageFile) {
-      // Xóa ảnh cũ nếu có
-      if (certificate.imageUrl) {
-        try {
-          const oldImageRef = ref(storage, certificate.imageUrl);
-          await deleteObject(oldImageRef);
-        } catch (error) {
-          console.log('No old image to delete or error deleting:', error);
-        }
-      }
-      
-      // Upload ảnh mới
-      const imageRef = ref(storage, `certificates/${certificate.id}-${imageFile.name}`);
-      await uploadBytes(imageRef, imageFile);
-      const imageUrl = await getDownloadURL(imageRef);
-      certificate.imageUrl = imageUrl;
-    }
-    
     // Lưu thông tin chứng chỉ vào Firestore
     await setDoc(doc(db, 'certificates', certificate.id), certificate);
     
