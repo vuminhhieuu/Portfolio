@@ -3,11 +3,11 @@ import {
   PlusIcon, TrashIcon, EditIcon, SaveIcon, ExternalLinkIcon, 
   UploadIcon, XIcon, ArrowUpIcon, ArrowDownIcon
 } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 import { 
   getCertificates, saveCertificate, deleteCertificate, updateCertificatesOrder, 
   createEmptyCertificate, Certificate 
 } from '../../../services/certificatesService';
+import { CloudinaryUploadWidget } from '../../CloudinaryUploadWidget';
 import { AdminHeader } from '../shared/AdminHeader';
 import { AdminContent } from '../shared/AdminContent';
 
@@ -21,6 +21,7 @@ export function CertificatesAdmin() {
   const [currentCertificate, setCurrentCertificate] = useState<Certificate | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   
   // Fetch certificates on component mount
@@ -90,8 +91,7 @@ export function CertificatesAdmin() {
   // Reset form
   const resetForm = () => {
     setCurrentCertificate(null);
-    setSelectedFile(null);
-    setPreviewImage(null);
+    setImageUrl(null);
     setIsEditing(false);
     setError(null);
   };
@@ -112,6 +112,17 @@ export function CertificatesAdmin() {
     setPreviewImage(null);
     setSelectedFile(null);
     setError(null);
+  };
+
+  const handleImageSuccess = (url: string) => {
+    console.log("Certificate image uploaded:", url);
+    setImageUrl(url);
+    if (currentCertificate) {
+      setCurrentCertificate({
+        ...currentCertificate,
+        imageUrl: url
+      });
+    }
   };
   
   // Delete certificate
@@ -177,21 +188,20 @@ export function CertificatesAdmin() {
         currentCertificate.order = certificates.length;
       }
       
-      const savedCertificate = await saveCertificate(currentCertificate, selectedFile);
+      // Save the certificate with the imageUrl from Cloudinary
+      // No need to pass the selectedFile parameter
+      const savedCertificate = await saveCertificate(currentCertificate);
       
       if (isEditing) {
-        // Update existing certificate in state
         setCertificates(prevCertificates => 
           prevCertificates.map(c => c.id === savedCertificate.id ? savedCertificate : c)
         );
         setSuccess('Certificate updated successfully!');
       } else {
-        // Add new certificate to state
         setCertificates(prevCertificates => [...prevCertificates, savedCertificate]);
         setSuccess('Certificate created successfully!');
       }
       
-      // Reset form
       resetForm();
     } catch (error) {
       console.error('Error saving certificate:', error);
@@ -559,17 +569,22 @@ export function CertificatesAdmin() {
                                                 )}
                                                 
                                                 {/* File Input */}
-                                                <label className="flex flex-col items-center px-4 py-6 bg-white text-slate-600 rounded-md border-2 border-dashed border-slate-300 hover:bg-slate-50 transition-colors cursor-pointer">
-                                                  <UploadIcon size={20} className="mb-2 text-slate-500" />
-                                                  <span className="text-sm font-medium text-slate-700">Click to upload image</span>
-                                                  <span className="text-xs text-slate-500 mt-1">PNG, JPG or WEBP (max. 2MB)</span>
-                                                  <input 
-                                                    type="file" 
-                                                    className="hidden"
-                                                    accept="image/png, image/jpeg, image/webp"
-                                                    onChange={handleFileChange}
+                                                <div>
+                                                  <CloudinaryUploadWidget 
+                                                    onSuccess={handleImageSuccess}
+                                                    buttonText="Upload Certificate Image"
+                                                    resourceType="image"
+                                                    widgetId={`certificate-${currentCertificate.id}`}
                                                   />
-                                                </label>
+                                                  {imageUrl && (
+                                                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                                                      <p className="text-sm text-green-700 flex items-center">
+                                                        <span className="mr-2">✓</span>
+                                                        Image uploaded successfully!
+                                                      </p>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               </div>
                                               
                                               {/* Form Buttons */}

@@ -82,7 +82,7 @@ export const getProjectsByCategory = async (category: string): Promise<Project[]
 };
 
 // Lưu một project
-export const saveProject = async (project: Project, imageFile: File | null = null): Promise<Project> => {
+export const saveProject = async (project: Project): Promise<Project> => {
   try {
     // Thêm/cập nhật timestamps
     const now = Date.now();
@@ -94,25 +94,6 @@ export const saveProject = async (project: Project, imageFile: File | null = nul
     // Nếu là project mới, thêm createdAt
     if (!project.createdAt) {
       updatedProject.createdAt = now;
-    }
-    
-    // Nếu có file ảnh mới, upload lên storage
-    if (imageFile) {
-      // Xóa ảnh cũ nếu có
-      if (project.imageUrl) {
-        try {
-          const oldImageRef = ref(storage, project.imageUrl);
-          await deleteObject(oldImageRef);
-        } catch (error) {
-          console.log('No old image to delete or error deleting:', error);
-        }
-      }
-      
-      // Upload ảnh mới
-      const imageRef = ref(storage, `projects/${project.id}-${imageFile.name}`);
-      await uploadBytes(imageRef, imageFile);
-      const imageUrl = await getDownloadURL(imageRef);
-      updatedProject.imageUrl = imageUrl;
     }
     
     // Lưu thông tin project vào Firestore
