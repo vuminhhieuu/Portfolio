@@ -12,9 +12,4 @@ export {
     ProjectsAdmin,
     CertificatesAdmin,
     ExperienceAdmin,
-    
-    // MediaAdmin
 };
-
-
-export const MediaAdmin = () => <div className="p-4">Media Admin Page</div>;

@@ -11,7 +11,6 @@ import {
   ProjectsAdmin, 
   CertificatesAdmin, 
   ExperienceAdmin, 
-  MediaAdmin 
 } from '../components/admin/pages';
 
 export const router = createBrowserRouter([
@@ -37,7 +36,6 @@ export const router = createBrowserRouter([
           { path: 'projects', element: <ProjectsAdmin /> },
           { path: 'certificates', element: <CertificatesAdmin /> },
           { path: 'experience', element: <ExperienceAdmin /> },
-          { path: 'media', element: <MediaAdmin /> }
         ]
       }
     ]

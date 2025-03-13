@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, ImageIcon, LogOutIcon, HomeIcon, BackpackIcon } from "lucide-react";
+import { LayoutDashboardIcon, UserIcon, WrenchIcon, FolderIcon, AwardIcon, BriefcaseIcon, LogOutIcon, HomeIcon, BackpackIcon } from "lucide-react";
 import { logout } from "../../services/authService";
 
 export function AdminLayout() {
@@ -32,11 +32,8 @@ export function AdminLayout() {
     icon: BriefcaseIcon,
     label: "Experience",
     path: "/admin/experience"
-  }, {
-    icon: ImageIcon,
-    label: "Media",
-    path: "/admin/media"
-  }];
+  }
+  ];
   const handleLogout = async () => {
     try {
       await logout();
