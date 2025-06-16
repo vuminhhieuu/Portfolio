@@ -1,7 +1,7 @@
 # Portfolio Website
 ![Portfolio Screenshot](/public/image.png)
 A modern, responsive portfolio website built with React, TypeScript and TailwindCSS, featuring a clean design and an integrated admin dashboard for easy content management.
-- **Live Site**: [View Portfolio](https://vuminhhieu.vercel.app)
+- **Live Site**: [View Portfolio](https://vuminhhieuu.id.vn/)
 
 ## Features
 
